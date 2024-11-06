@@ -18,7 +18,7 @@ app = typer.Typer()
 @app.command()
 def main(
         url: str,
-        page_limit: Optional[int] = 1,
+        page_limit: Optional[int] = None,
         export_to: Optional[str] = "json",
 ) -> None:
     parsed_data = None

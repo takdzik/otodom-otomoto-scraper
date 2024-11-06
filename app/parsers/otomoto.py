@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+import re
 from typing import Optional
 
 from .otobase import OtoBaseParser
@@ -23,14 +24,19 @@ class OtoMotoParser(OtoBaseParser):
 
     def get_offer(self, offer) -> Optional[OtoMotoResult]:
         try:
-            title_url_container = offer.find("h1", class_="efpuxbr9 ooa-1ed90th er34gjf0")
+            #title_url_container = offer.find("h1", class_="efpuxbr9 ooa-1ed90th er34gjf0")
+            title_url_container = offer.find("h1", class_=re.compile(r"ooa-1ed90th"))
 
             title = title_url_container.find("a")
             url = title["href"]
             image = offer.find("img")
-            type_of_seller = offer.find("li", class_="ooa-1y6ajhy ebwza7n5")
-            price = offer.find("h3", class_="efpuxbr16 ooa-1n2paoq er34gjf0")
-            price_currency = offer.find("p", class_="efpuxbr17 ooa-8vn6i7 er34gjf0")
+            image_url = image["src"] if image["src"] else None,
+            #type_of_seller = offer.find("li", class_="ooa-1y6ajhy ebwza7n5")
+            type_of_seller = offer.find("li", class_=re.compile(r"ooa-1y6ajhy"))
+            #price = offer.find("h3", class_="efpuxbr16 ooa-1n2paoq er34gjf0")
+            price = offer.find("h3", class_=re.compile(r"ooa-1n2paoq"))
+            #price_currency = offer.find("p", class_="efpuxbr17 ooa-8vn6i7 er34gjf0")
+            price_currency = offer.find("p", class_=re.compile(r"ooa-8vn6i7"))
 
             mileage = offer.find("dd", {"data-parameter": "mileage"})
             fuel_type = offer.find("dd", {"data-parameter": "fuel_type"})
@@ -40,7 +46,8 @@ class OtoMotoParser(OtoBaseParser):
             result = OtoMotoResult(
                 title=title.text if title else None,
                 url=url if url else None,
-                image_url=image["src"] if image else None,
+                #image_url=image["src"] if image else None,
+                image_url=image_url[0],
                 type_of_seller=type_of_seller.text if type_of_seller else None,
                 price=price.text if price else None,
                 price_currency=price_currency.text if price_currency else None,
@@ -57,7 +64,9 @@ class OtoMotoParser(OtoBaseParser):
 
     def get_offers(self, soup):
         try:
-            items = soup.find_all("article", class_="ooa-yca59n efpuxbr0")
+            #items = soup.find_all("article", class_="ooa-yca59n efpuxbr0")
+            items = soup.find_all("article", class_=re.compile(r"ooa-yca59n"))
+            #ooa-yca59n epwfahw0
             print(f"Find {len(items)} items")
             return items
         except Exception as e:
